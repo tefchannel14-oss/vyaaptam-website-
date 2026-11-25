@@ -909,9 +909,12 @@ async function loadAdminServices() {
       const kpiServices = document.getElementById('kpi-live-services');
       if (kpiServices) kpiServices.textContent = String(adminServicesList.length);
       renderAdminServices();
+    } else {
+      if (grid) grid.innerHTML = `<div class="col-span-full py-8 text-center text-sm text-red-500">Failed to load services from server. <button onclick="loadAdminServices()" class="underline font-semibold ml-2">Retry</button></div>`;
     }
   } catch (err) {
     console.error('Failed to load services:', err);
+    if (grid) grid.innerHTML = `<div class="col-span-full py-8 text-center text-sm text-red-500">Connection error loading services. <button onclick="loadAdminServices()" class="underline font-semibold ml-2">Retry</button></div>`;
   }
 }
 
@@ -919,8 +922,12 @@ function filterServices(category) {
   activeServiceCategory = category;
   const buttons = document.querySelectorAll('#services-category-tabs button');
   buttons.forEach(btn => {
-    const isTarget = (category === 'all' && btn.textContent.includes('All')) ||
-                     btn.textContent.includes(category.replace(' & Compliance', '').replace('Web & App Development', 'Web & App'));
+    const txt = btn.textContent.toLowerCase();
+    const cat = category.toLowerCase();
+    const isTarget = (category === 'all' && txt.includes('all')) ||
+                     (cat.includes('marketing') && txt.includes('marketing')) ||
+                     (cat.includes('web') && txt.includes('web')) ||
+                     (cat.includes('legal') && txt.includes('legal'));
     btn.className = isTarget
       ? 'rounded-full px-3.5 py-1.5 text-xs font-semibold bg-ink text-paper transition'
       : 'rounded-full px-3.5 py-1.5 text-xs font-semibold bg-sand hover:bg-line text-ink transition';
@@ -939,7 +946,11 @@ function renderAdminServices() {
 
   let filtered = [...adminServicesList];
   if (activeServiceCategory !== 'all') {
-    filtered = filtered.filter(s => s.category === activeServiceCategory);
+    const filterCat = activeServiceCategory.toLowerCase();
+    filtered = filtered.filter(s => {
+      const sCat = (s.category || '').toLowerCase();
+      return sCat === filterCat || sCat.includes(filterCat) || filterCat.includes(sCat);
+    });
   }
   if (serviceSearchQuery) {
     filtered = filtered.filter(s =>
@@ -950,14 +961,15 @@ function renderAdminServices() {
   }
 
   if (!filtered.length) {
-    grid.innerHTML = `<div class="col-span-full py-12 text-center text-sm text-muted">No services found matching filters.</div>`;
+    grid.innerHTML = `<div class="col-span-full py-12 text-center text-sm text-muted">No services found matching filters. <button onclick="filterServices('all')" class="underline font-semibold ml-2">Show all</button></div>`;
     return;
   }
 
   grid.innerHTML = filtered.map(s => {
     let catColor = 'text-magenta bg-magenta/10';
-    if (s.category.includes('Web')) catColor = 'text-violet bg-violet-soft';
-    if (s.category.includes('Legal')) catColor = 'text-orange bg-orange-soft';
+    const sCat = s.category || '';
+    if (sCat.includes('Web')) catColor = 'text-violet bg-violet-soft';
+    if (sCat.includes('Legal')) catColor = 'text-orange bg-orange-soft';
 
     return `
       <div class="card p-5 flex flex-col justify-between hover:shadow-lg transition">
@@ -1096,9 +1108,12 @@ async function loadAdminBlogs() {
       const kpiArticles = document.getElementById('kpi-published-articles');
       if (kpiArticles) kpiArticles.textContent = String(adminBlogsList.length);
       renderAdminBlogs();
+    } else {
+      if (listEl) listEl.innerHTML = `<div class="py-8 text-center text-sm text-red-500">Failed to load articles from server. <button onclick="loadAdminBlogs()" class="underline font-semibold ml-2">Retry</button></div>`;
     }
   } catch (err) {
     console.error('Failed to load blogs:', err);
+    if (listEl) listEl.innerHTML = `<div class="py-8 text-center text-sm text-red-500">Connection error loading articles. <button onclick="loadAdminBlogs()" class="underline font-semibold ml-2">Retry</button></div>`;
   }
 }
 
@@ -1534,9 +1549,12 @@ async function loadAdminSEO() {
       const data = await res.json();
       adminSEOList = data.items || [];
       renderAdminSEO();
+    } else {
+      if (container) container.innerHTML = `<div class="py-8 text-center text-sm text-red-500">Failed to load SEO configurations from server. <button onclick="loadAdminSEO()" class="underline font-semibold ml-2">Retry</button></div>`;
     }
   } catch (err) {
     console.error('Failed to load SEO data:', err);
+    if (container) container.innerHTML = `<div class="py-8 text-center text-sm text-red-500">Connection error loading SEO data. <button onclick="loadAdminSEO()" class="underline font-semibold ml-2">Retry</button></div>`;
   }
 }
 
@@ -1826,6 +1844,9 @@ window.updateSerpPreview = updateSerpPreview;
 window.savePageSEO = savePageSEO;
 window.loadAdminSettings = loadAdminSettings;
 window.saveAdminSettings = saveAdminSettings;
+window.loadAdminServices = loadAdminServices;
+window.loadAdminBlogs = loadAdminBlogs;
+window.loadAdminSEO = loadAdminSEO;
 window.showToast = showToast;
 window.uploadImageFromAdmin = uploadImageFromAdmin;
 window.toggleMediaGallery = toggleMediaGallery;
