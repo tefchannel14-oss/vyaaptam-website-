@@ -32,6 +32,7 @@ const MIME_TYPES = {
   '.css': 'text/css; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
   '.png': 'image/png',
   '.webp': 'image/webp',
   '.jpg': 'image/jpeg',
@@ -121,6 +122,9 @@ const server = http.createServer((req, res) => {
       pathname = pathname + '.html';
     } else if (fs.existsSync(indexHtml)) {
       pathname = path.join(pathname, 'index.html');
+    } else if (pathname.startsWith('/blog/')) {
+      // Dynamic fallback for any blog slug so no blog article ever 404s
+      pathname = '/blog/how-to-choose-a-digital-marketing-company-in-ahmedabad.html';
     }
   }
 

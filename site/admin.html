@@ -161,6 +161,16 @@
 
           <button type="button" class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition text-ink/70 hover:bg-sand">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            Team &amp; About
+          </button>
+
+          <button type="button" class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition text-ink/70 hover:bg-sand">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
               <circle cx="12" cy="12" r="3"></circle>
             </svg>
@@ -478,10 +488,36 @@
               </div>
             </div>
 
-            <!-- 4. System Diagnostics & Cloud Architecture -->
+            <!-- 4. Web Analytics, Search Console & Heatmaps -->
+            <div class="card p-6 sm:p-8 space-y-6">
+              <div class="flex items-center gap-2 pb-3 border-b border-line">
+                <span class="grid size-7 place-items-center rounded-lg bg-orange/10 text-orange font-semibold text-xs">04</span>
+                <h2 class="text-lg font-semibold text-ink">Analytics, Search Console & Heatmaps Tracking</h2>
+              </div>
+              <p class="text-xs text-muted">Paste your tracking IDs below to track traffic, conversions, search ranking, and user recordings across all website pages automatically.</p>
+              <div class="grid sm:grid-cols-3 gap-4">
+                <div>
+                  <label class="form-label text-xs">Google Analytics 4 (GA4) ID</label>
+                  <input type="text" id="setting-ga4-id" class="form-input text-sm" placeholder="G-XXXXXXXXXX"/>
+                  <span class="text-[11px] text-muted">From Google Analytics Measurement ID</span>
+                </div>
+                <div>
+                  <label class="form-label text-xs">Microsoft Clarity Project ID</label>
+                  <input type="text" id="setting-clarity-id" class="form-input text-sm" placeholder="e.g. q1w2e3r4t5"/>
+                  <span class="text-[11px] text-muted">For visual session recordings & heatmaps</span>
+                </div>
+                <div>
+                  <label class="form-label text-xs">Google Search Console Tag</label>
+                  <input type="text" id="setting-gsc-verification" class="form-input text-sm" placeholder="e.g. AbCdEf12345..."/>
+                  <span class="text-[11px] text-muted">HTML tag content for GSC verification</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5. System Diagnostics & Cloud Architecture -->
             <div class="card p-6 sm:p-8 bg-paper/60 border border-line">
               <div class="flex items-center gap-2 pb-3 border-b border-line mb-4">
-                <span class="grid size-7 place-items-center rounded-lg bg-ink/10 text-ink font-semibold text-xs">04</span>
+                <span class="grid size-7 place-items-center rounded-lg bg-ink/10 text-ink font-semibold text-xs">05</span>
                 <h2 class="text-lg font-semibold text-ink">System Diagnostics & Deployment Architecture</h2>
               </div>
               <div class="grid sm:grid-cols-3 gap-4 text-xs">
@@ -510,6 +546,69 @@
               </button>
             </div>
           </form>
+        </section>
+
+        <!-- =================================================================
+             TAB 6: TEAM & ABOUT PAGE CMS
+             ================================================================= -->
+        <section id="tab-team" style="display:none;">
+          <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 class="text-3xl font-semibold">Team &amp; About Page CMS</h1>
+              <p class="text-sm text-muted">Manage your team personalities, face-reveal photos, bios, and About page visual media.</p>
+            </div>
+            <button type="button" onclick="openTeamModal()" class="btn-brand text-xs py-2.5 px-4 w-fit flex items-center gap-1.5 shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>
+              Add New Team Member
+            </button>
+          </div>
+
+          <!-- 1. About Page Hero Image & Visual Media -->
+          <div class="card p-6 sm:p-8 space-y-6 mb-8">
+            <div class="flex items-center justify-between pb-3 border-b border-line">
+              <div class="flex items-center gap-2">
+                <span class="grid size-7 place-items-center rounded-lg bg-brand/10 text-brand font-semibold text-xs">📸</span>
+                <h2 class="text-lg font-semibold text-ink">About Page Workspace Photo</h2>
+              </div>
+              <a href="/about" target="_blank" class="text-xs text-brand font-semibold hover:underline">View Live About Page ↗</a>
+            </div>
+
+            <div>
+              <label class="form-label text-xs">Workspace Team Image URL</label>
+              <div class="flex gap-2">
+                <input type="text" id="setting-about-image" class="form-input text-xs flex-1" value="/img/about.webp" placeholder="/img/about.webp"/>
+                <label class="btn-ghost py-2 px-3 text-xs cursor-pointer shrink-0 flex items-center gap-1.5 bg-sand hover:bg-line transition">
+                  <span>📁 Upload Image</span>
+                  <input type="file" accept="image/*" class="sr-only" onchange="uploadImageFromAdmin(event, 'setting-about-image')"/>
+                </label>
+                <button type="button" onclick="toggleMediaGallery('setting-about-image')" class="btn-ghost py-2 px-3 text-xs shrink-0 flex items-center gap-1.5 bg-sand hover:bg-line transition">
+                  <span>🖼️ Gallery</span>
+                </button>
+              </div>
+
+              <div id="media-gallery-setting-about-image" class="hidden mt-3 p-3 rounded-2xl bg-sand/40 border border-line">
+                <p class="text-xs font-semibold text-ink mb-2">Select From Brand Assets:</p>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-2" id="media-gallery-grid-setting-about-image"></div>
+              </div>
+            </div>
+
+            <div class="flex justify-end">
+              <button type="button" onclick="saveAboutMedia()" id="btn-save-about-media" class="btn-brand py-2.5 px-6 text-xs flex items-center gap-1.5">
+                Save About Image
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Team Members Grid (People Behind Growth) -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-semibold text-ink">People Behind Growth</h2>
+              <span class="text-xs text-muted">Click edit to update face photo, bio, or role</span>
+            </div>
+            <div id="admin-team-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <!-- Dynamically populated via renderAdminTeam() -->
+            </div>
+          </div>
         </section>
 
       </div>
@@ -882,6 +981,82 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       7. MODAL: EDIT / CREATE TEAM MEMBER
+       ========================================================================= -->
+  <div id="team-member-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 backdrop-blur-sm p-4 overflow-y-auto" style="display:none;">
+    <div class="card w-full max-w-xl p-6 sm:p-8 bg-white shadow-2xl relative my-8 animate-rise">
+      <div class="flex items-center justify-between pb-4 border-b border-line mb-6">
+        <div>
+          <h2 id="team-modal-title" class="text-2xl font-semibold">Edit Team Member</h2>
+          <p class="text-xs text-muted mt-0.5">Customize personality name, role, face reveal photo, and bio.</p>
+        </div>
+        <button type="button" onclick="closeTeamModal()" class="size-8 rounded-full grid place-items-center bg-sand hover:bg-line transition text-ink font-semibold">✕</button>
+      </div>
+
+      <form id="team-member-form" onsubmit="event.preventDefault(); saveTeamMember();" class="space-y-4">
+        <input type="hidden" id="team-edit-id"/>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="form-label text-xs">Full Name *</label>
+            <input type="text" id="team-edit-name" required class="form-input text-sm" placeholder="e.g. Sanchit Khandelwal"/>
+          </div>
+          <div>
+            <label class="form-label text-xs">Role / Designation *</label>
+            <input type="text" id="team-edit-role" required class="form-input text-sm" placeholder="e.g. Founder & Growth Strategist"/>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="form-label text-xs">Initials (For Avatar Circle)</label>
+            <input type="text" id="team-edit-initials" maxlength="3" class="form-input text-sm uppercase" placeholder="e.g. SK"/>
+          </div>
+          <div>
+            <label class="form-label text-xs">LinkedIn Profile URL</label>
+            <input type="url" id="team-edit-linkedin" class="form-input text-sm" placeholder="https://www.linkedin.com/company/vyaaptam/"/>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label text-xs">Face Reveal Photo URL</label>
+          <div class="flex gap-2">
+            <input type="text" id="team-edit-image" class="form-input text-xs flex-1" placeholder="/img/hero.webp or https://..."/>
+            <label class="btn-ghost py-2 px-3 text-xs cursor-pointer shrink-0 flex items-center gap-1.5 bg-sand hover:bg-line transition">
+              <span>📁 Upload Photo</span>
+              <input type="file" accept="image/*" class="sr-only" onchange="uploadImageFromAdmin(event, 'team-edit-image')"/>
+            </label>
+            <button type="button" onclick="toggleMediaGallery('team-edit-image')" class="btn-ghost py-2 px-3 text-xs shrink-0 flex items-center gap-1.5 bg-sand hover:bg-line transition">
+              <span>🖼️ Gallery</span>
+            </button>
+          </div>
+          <div id="media-gallery-team-edit-image" class="hidden mt-3 p-3 rounded-2xl bg-sand/40 border border-line">
+            <p class="text-xs font-semibold text-ink mb-2">Select Photo from Brand Gallery:</p>
+            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2" id="media-gallery-grid-team-edit-image"></div>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label text-xs">Bio & Highlights</label>
+          <textarea id="team-edit-bio" rows="3" class="form-input text-sm" placeholder="Short description of experience, achievements, and responsibilities..."></textarea>
+        </div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-line">
+          <button type="button" id="team-delete-btn" onclick="deleteCurrentTeamMember()" class="text-xs font-semibold text-red-600 hover:underline">
+            Delete Member
+          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="closeTeamModal()" class="btn-ghost py-2 px-4 text-xs">Cancel</button>
+            <button type="submit" id="team-save-btn" class="btn-brand py-2.5 px-6 text-xs flex items-center gap-1.5 font-semibold">
+              Save Team Member
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 

@@ -1,0 +1,23 @@
+{
+  "name": "Vyaaptam - Growth Marketing, Web & Legal Agency",
+  "short_name": "Vyaaptam",
+  "description": "One integrated team for SEO, Social Media, Web Development, and Corporate Legal Compliance.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf7f2",
+  "theme_color": "#1b1533",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/img/brand-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/vyaaptam-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

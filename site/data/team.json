@@ -1,0 +1,52 @@
+[
+  {
+    "id": "team-1",
+    "name": "Sanchit Khandelwal",
+    "role": "Founder & Growth Strategist",
+    "bio": "8+ years in digital training & marketing. Trained 10,000+ professionals across India and built Vyaaptam to serve growing businesses.",
+    "initials": "SK",
+    "image": "/img/team-sanchit.webp",
+    "linkedin": "https://www.linkedin.com/company/vyaaptam/",
+    "is_founder": true
+  },
+  {
+    "id": "team-2",
+    "name": "Aadil Ahmed",
+    "role": "Sr. Full-Stack Developer",
+    "bio": "Architect of fast, secure web portals, Node.js APIs, responsive Shopify stores, and modern React web applications.",
+    "initials": "AA",
+    "image": "/img/team-aadil.webp",
+    "linkedin": "https://www.linkedin.com/company/vyaaptam/",
+    "is_founder": false
+  },
+  {
+    "id": "team-3",
+    "name": "Nidhi Patel",
+    "role": "SEO & Performance Lead",
+    "bio": "Specialized in data-driven technical SEO, local Google Maps ranking 3-packs, and organic traffic growth funnels.",
+    "initials": "NP",
+    "image": "/img/team-nidhi.webp",
+    "linkedin": "https://www.linkedin.com/company/vyaaptam/",
+    "is_founder": false
+  },
+  {
+    "id": "team-4",
+    "name": "Surbhi Khandelwal",
+    "role": "Senior Financial & Tax Consultant",
+    "bio": "Expert in corporate compliance, GST/ITR statutory audits, MCA company incorporation, and financial advisory.",
+    "initials": "SK",
+    "image": "/img/team-surbhi.webp",
+    "linkedin": "https://www.linkedin.com/company/vyaaptam/",
+    "is_founder": false
+  },
+  {
+    "id": "team-5",
+    "name": "Ajeet Kumar",
+    "role": "Data Scientist & Media Buyer",
+    "bio": "Meta & Google Ads performance specialist focused on high ROAS, conversion rate optimization, and analytics tracking.",
+    "initials": "AK",
+    "image": "/img/team-ajeet.webp",
+    "linkedin": "https://www.linkedin.com/company/vyaaptam/",
+    "is_founder": false
+  }
+]

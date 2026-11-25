@@ -3,5 +3,11 @@ Allow: /
 Disallow: /admin
 Disallow: /admin.html
 Disallow: /api/
+Disallow: /.netlify/
 
-Sitemap: https://dynamic-responsive-website-7d84e2.netlify.app/sitemap.xml
+# Global Crawl Optimization
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://vyaaptam.com/sitemap.xml
+Sitemap: https://www.vyaaptam.com/sitemap.xml

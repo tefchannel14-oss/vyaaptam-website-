@@ -15,6 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initForms();
   initDynamicSeoSync();
   initDynamicSettingsSync();
+  initAnimatedBrandIcon();
+  initAboutTeamSection();
+  initSmartBlogLeadPopup();
+  initAnalytics();
 });
 
 /* ==========================================================================
@@ -662,7 +666,321 @@ async function initDynamicSettingsSync() {
     } else if (existingBanner) {
       existingBanner.remove();
     }
+
+    // 7. About page workspace image sync
+    if (settings.about_image) {
+      const aboutImg = document.getElementById('about-workspace-image') || document.querySelector('img[src*="about.webp"]');
+      if (aboutImg) {
+        aboutImg.src = settings.about_image;
+        aboutImg.srcset = settings.about_image;
+      }
+    }
   } catch (err) {
     // Graceful offline fallback
   }
+}
+
+/* ==========================================================================
+   11. ANIMATED BRAND ICON (Professional Floating Breathing Effect)
+   ========================================================================== */
+function initAnimatedBrandIcon() {
+  const brandLogos = document.querySelectorAll('header img[alt*="Vyaaptam"]');
+  brandLogos.forEach(logo => {
+    logo.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s ease';
+    logo.style.filter = 'drop-shadow(0 4px 10px rgba(107, 54, 200, 0.12))';
+    logo.addEventListener('mouseenter', () => {
+      logo.style.transform = 'translateY(-2px) scale(1.03)';
+      logo.style.filter = 'drop-shadow(0 8px 18px rgba(239, 122, 45, 0.25))';
+    });
+    logo.addEventListener('mouseleave', () => {
+      logo.style.transform = 'translateY(0) scale(1)';
+      logo.style.filter = 'drop-shadow(0 4px 10px rgba(107, 54, 200, 0.12))';
+    });
+  });
+}
+
+/* ==========================================================================
+   12. INTERACTIVE ABOUT PAGE TEAM (Face Reveal on Click)
+   ========================================================================== */
+async function initAboutTeamSection() {
+  const grid = document.getElementById('team-cards-grid');
+  if (!grid) return;
+
+  try {
+    const res = await fetch('/api/content?type=team');
+    let team = [];
+    if (res.ok) {
+      const data = await res.json();
+      team = data.items || [];
+    }
+
+    if (!team.length) {
+      team = [
+        { id: '1', name: 'Sanchit Khandelwal', role: 'Founder & Growth Strategist', initials: 'SK', bio: '8+ years in digital training & marketing. Trained 10,000+ professionals across India and built Vyaaptam to serve growing businesses.', image: '/img/hero.webp', linkedin: 'https://www.linkedin.com/company/vyaaptam/' },
+        { id: '2', name: 'Aadil Ahmed', role: 'Sr. Full-Stack Developer', initials: 'AA', bio: 'Architect of high-performance web systems, custom apps, and secure e-commerce portals.', image: '/img/about.webp', linkedin: 'https://www.linkedin.com/company/vyaaptam/' },
+        { id: '3', name: 'Nidhi Patel', role: 'SEO & Performance Lead', initials: 'NP', bio: 'Specialized in Google Maps ranking 3-packs, data-driven SEO, and organic traffic growth.', image: '/img/blog-seo.webp', linkedin: 'https://www.linkedin.com/company/vyaaptam/' },
+        { id: '4', name: 'Surbhi Khandelwal', role: 'Senior Financial & Tax Consultant', initials: 'SK', bio: 'Expert in corporate compliance, GST/ITR statutory audits, and company incorporation.', image: '/img/blog-legal.webp', linkedin: 'https://www.linkedin.com/company/vyaaptam/' },
+        { id: '5', name: 'Ajeet Kumar', role: 'Data Scientist & Media Buyer', initials: 'AK', bio: 'Meta & Google Ads performance specialist focused on high ROAS and conversion optimization.', image: '/img/blog-agency.webp', linkedin: 'https://www.linkedin.com/company/vyaaptam/' }
+      ];
+    }
+
+    grid.innerHTML = team.map(m => `
+      <li class="team-card group relative overflow-hidden rounded-3xl border border-line bg-white p-7 transition-all duration-500 hover:shadow-2xl hover:border-brand/40 cursor-pointer" onclick="toggleFaceReveal(this)" data-revealed="false">
+        <!-- Front: Initials & Hook -->
+        <div class="team-front flex flex-col justify-between transition-all duration-300">
+          <div>
+            <div class="relative mb-6 flex items-center justify-between">
+              <div class="relative">
+                <span class="grid size-20 place-items-center rounded-2xl bg-gradient-to-tr from-brand to-magenta text-2xl font-bold text-white shadow-md transition-transform duration-300 group-hover:scale-105">
+                  ${m.initials || 'VK'}
+                </span>
+                <span class="absolute -bottom-1 -right-1 grid size-6 place-items-center rounded-full bg-emerald-500 text-white text-[10px] border-2 border-white shadow font-bold">✓</span>
+              </div>
+              <span class="rounded-full px-3 py-1 text-xs font-semibold bg-sand text-ink border border-line group-hover:bg-brand group-hover:text-white transition-all flex items-center gap-1 shadow-sm">
+                <span>✨ Tap to Reveal Face</span>
+              </span>
+            </div>
+            <h3 class="text-xl font-bold text-ink">${m.name}</h3>
+            <p class="text-sm font-semibold text-brand mt-0.5">${m.role}</p>
+            <p class="text-xs text-muted mt-3 line-clamp-2 leading-relaxed">${m.bio || ''}</p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-line/60 flex items-center justify-between text-xs text-muted">
+            <span class="font-medium">Vyaaptam Growth Team</span>
+            <span class="font-semibold text-brand flex items-center gap-1">View Face Photo ↗</span>
+          </div>
+        </div>
+
+        <!-- Back: Face Photo & Full Bio (Revealed on Tap) -->
+        <div class="team-back hidden opacity-0 transition-all duration-500">
+          <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-sand/40 border border-line mb-4 shadow-md">
+            <img src="${m.image || '/img/hero.webp'}" alt="${m.name}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" onerror="this.src='/img/vyaaptam-logo.png'; this.className='w-full h-full object-contain p-6 bg-sand/30';"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent flex items-end p-3.5">
+              <div>
+                <span class="block text-xs font-bold text-white">${m.name}</span>
+                <span class="block text-[11px] text-white/80">${m.role}</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-ink/85 leading-relaxed bg-sand/30 p-3 rounded-xl border border-line/60">${m.bio || 'Core growth strategist driving business performance at Vyaaptam.'}</p>
+          <div class="mt-4 pt-3 border-t border-line flex items-center justify-between">
+            <a href="${m.linkedin || 'https://www.linkedin.com/company/vyaaptam/'}" target="_blank" rel="noreferrer" onclick="event.stopPropagation()" class="text-xs font-semibold text-violet hover:underline flex items-center gap-1">
+              LinkedIn ↗
+            </a>
+            <button type="button" class="text-xs font-semibold text-muted hover:text-ink">✕ Flip back</button>
+          </div>
+        </div>
+      </li>
+    `).join('');
+  } catch(e) {
+    console.error('Error loading team:', e);
+  }
+}
+
+function toggleFaceReveal(card) {
+  const front = card.querySelector('.team-front');
+  const back = card.querySelector('.team-back');
+  const isRevealed = card.getAttribute('data-revealed') === 'true';
+
+  if (!isRevealed) {
+    front.classList.add('hidden');
+    back.classList.remove('hidden');
+    setTimeout(() => { back.classList.remove('opacity-0'); }, 20);
+    card.setAttribute('data-revealed', 'true');
+    card.classList.add('border-brand', 'ring-2', 'ring-brand/20');
+  } else {
+    back.classList.add('opacity-0');
+    setTimeout(() => {
+      back.classList.add('hidden');
+      front.classList.remove('hidden');
+    }, 200);
+    card.setAttribute('data-revealed', 'false');
+    card.classList.remove('border-brand', 'ring-2', 'ring-brand/20');
+  }
+}
+window.toggleFaceReveal = toggleFaceReveal;
+
+/* ==========================================================================
+   13. 4-SECOND NON-INTRUSIVE SMART ARTICLE LEAD POPUP & NEWSLETTER
+   ========================================================================== */
+function initSmartBlogLeadPopup() {
+  const isBlog = window.location.pathname.startsWith('/blog') || window.location.pathname.includes('blog');
+  if (!isBlog) return;
+
+  // Don't irritate user if closed within 7 days
+  const lastDismissed = localStorage.getItem('vyaaptam_blog_popup_dismissed');
+  if (lastDismissed && (Date.now() - parseInt(lastDismissed, 10)) < 7 * 24 * 60 * 60 * 1000) {
+    return;
+  }
+
+  // 4-Second Reading Delay
+  setTimeout(() => {
+    if (document.getElementById('vyaaptam-smart-blog-popup')) return;
+
+    const popup = document.createElement('div');
+    popup.id = 'vyaaptam-smart-blog-popup';
+    popup.className = 'fixed bottom-5 right-5 z-50 max-w-sm w-[92vw] sm:w-[380px] rounded-3xl bg-white border border-line shadow-2xl p-6 transition-all duration-500 translate-y-10 opacity-0';
+    popup.innerHTML = `
+      <div class="relative">
+        <button type="button" onclick="closeSmartBlogPopup(true)" aria-label="Close" class="absolute -top-2 -right-2 grid size-7 place-items-center rounded-full bg-sand hover:bg-line text-ink text-xs font-bold transition">
+          ✕
+        </button>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-magenta/10 text-magenta">Exclusive Growth Checklist</span>
+          <span class="text-[11px] text-muted font-medium">Free Download</span>
+        </div>
+        <h4 class="text-lg font-bold text-ink leading-snug">Enjoying this article?</h4>
+        <p class="text-xs text-muted mt-1 leading-relaxed">Get our daily 2-minute growth breakdowns & 2026 digital compliance checklist straight to your inbox.</p>
+        
+        <form onsubmit="handlePopupSubscribe(event)" class="mt-4 space-y-2.5">
+          <input type="email" id="popup-sub-email" required placeholder="Enter your work email" class="form-input text-xs py-2.5 px-3.5 rounded-xl w-full border-line bg-sand/30 focus:bg-white"/>
+          <input type="tel" id="popup-sub-phone" placeholder="WhatsApp Number (Optional for instant PDF)" class="form-input text-xs py-2 px-3.5 rounded-xl w-full border-line bg-sand/30 focus:bg-white"/>
+          <button type="submit" id="popup-sub-btn" class="btn-brand text-xs py-2.5 px-4 w-full rounded-xl flex items-center justify-center gap-1.5 font-bold shadow-md">
+            <span>Send Me Daily Insights 🚀</span>
+          </button>
+        </form>
+        <p class="text-[10px] text-center text-muted mt-2.5">No spam ever. Unsubscribe in 1 click.</p>
+      </div>
+    `;
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+      popup.classList.remove('translate-y-10', 'opacity-0');
+    }, 50);
+  }, 4000);
+}
+
+function closeSmartBlogPopup(dontShowAgain = true) {
+  const popup = document.getElementById('vyaaptam-smart-blog-popup');
+  if (popup) {
+    popup.classList.add('translate-y-10', 'opacity-0');
+    setTimeout(() => { popup.remove(); }, 400);
+  }
+  if (dontShowAgain) {
+    localStorage.setItem('vyaaptam_blog_popup_dismissed', String(Date.now()));
+  }
+}
+window.closeSmartBlogPopup = closeSmartBlogPopup;
+
+async function handlePopupSubscribe(e) {
+  e.preventDefault();
+  const email = document.getElementById('popup-sub-email')?.value.trim();
+  const phone = document.getElementById('popup-sub-phone')?.value.trim() || '';
+  const btn = document.getElementById('popup-sub-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span>Saving...</span>';
+  }
+
+  try {
+    await fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Newsletter Reader',
+        email,
+        phone: phone || '+91 00000 00000',
+        service: 'Daily Blog Newsletter',
+        message: 'Subscribed to Daily Growth Insights via 4-second article popup',
+        source_page: window.location.pathname
+      })
+    });
+
+    const popup = document.getElementById('vyaaptam-smart-blog-popup');
+    if (popup) {
+      popup.innerHTML = `
+        <div class="text-center py-4 space-y-2">
+          <div class="inline-grid size-12 place-items-center rounded-full bg-emerald-100 text-emerald-600 text-xl font-bold mx-auto mb-1">✓</div>
+          <h4 class="text-base font-bold text-ink">You're on the list!</h4>
+          <p class="text-xs text-muted">Check your inbox for our latest 2026 Growth Playbook.</p>
+          <button type="button" onclick="closeSmartBlogPopup(true)" class="btn-ghost py-1.5 px-4 text-xs rounded-xl mt-2">Close</button>
+        </div>
+      `;
+      localStorage.setItem('vyaaptam_blog_popup_dismissed', String(Date.now() + 365 * 24 * 3600 * 1000));
+    }
+  } catch(err) {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>Send Me Daily Insights 🚀</span>';
+    }
+  }
+}
+window.handlePopupSubscribe = handlePopupSubscribe;
+
+async function handleBlogSubscribe(e) {
+  e.preventDefault();
+  const form = e.target;
+  const input = form.querySelector('input[type="email"]');
+  const btn = form.querySelector('button[type="submit"]');
+  const email = input ? input.value.trim() : '';
+
+  if (!email) return;
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Subscribing...';
+  }
+
+  try {
+    await fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Newsletter Reader',
+        email,
+        phone: '+91 00000 00000',
+        service: 'Daily Blog Newsletter',
+        message: 'Subscribed via bottom article newsletter box',
+        source_page: window.location.pathname
+      })
+    });
+
+    form.innerHTML = '<p class="text-sm font-semibold text-emerald-300 py-2">✓ Success! You\'re subscribed to daily updates.</p>';
+  } catch(err) {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Subscribe Free 🚀';
+    }
+  }
+}
+window.handleBlogSubscribe = handleBlogSubscribe;
+
+/* ==========================================================================
+   14. DYNAMIC ANALYTICS & TRACKING ENGINE (GA4, Clarity, GSC)
+   ========================================================================== */
+function initAnalytics() {
+  fetch('/api/content?type=settings')
+    .then(r => r.json())
+    .then(data => {
+      const s = data.item || data.settings || {};
+      // 1. Google Analytics 4 (GA4)
+      if (s.ga4_id && s.ga4_id.startsWith('G-')) {
+        if (!document.getElementById('ga4-script')) {
+          const gaScript = document.createElement('script');
+          gaScript.id = 'ga4-script';
+          gaScript.async = true;
+          gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${s.ga4_id}`;
+          document.head.appendChild(gaScript);
+
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', s.ga4_id);
+        }
+      }
+      // 2. Microsoft Clarity (Heatmaps & Session Replays)
+      if (s.clarity_id && !document.getElementById('clarity-script')) {
+        const cScript = document.createElement('script');
+        cScript.id = 'clarity-script';
+        cScript.type = 'text/javascript';
+        cScript.text = `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "${s.clarity_id}");`;
+        document.head.appendChild(cScript);
+      }
+      // 3. Google Search Console (GSC) Verification Tag
+      if (s.gsc_verification && !document.querySelector('meta[name="google-site-verification"]')) {
+        const meta = document.createElement('meta');
+        meta.name = 'google-site-verification';
+        meta.content = s.gsc_verification;
+        document.head.appendChild(meta);
+      }
+    })
+    .catch(() => {});
 }

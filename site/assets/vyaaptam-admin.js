@@ -143,6 +143,7 @@ function initNavigation() {
       else if (label.includes('services')) switchTab('services');
       else if (label.includes('blog')) switchTab('blog');
       else if (label.includes('seo')) switchTab('seo');
+      else if (label.includes('team') || label.includes('about')) switchTab('team');
       else if (label.includes('settings')) switchTab('settings');
     });
   });
@@ -150,7 +151,7 @@ function initNavigation() {
 
 function switchTab(tab) {
   currentTab = tab;
-  const sections = ['tab-overview', 'tab-leads', 'tab-services', 'tab-blog', 'tab-seo', 'tab-settings'];
+  const sections = ['tab-overview', 'tab-leads', 'tab-services', 'tab-blog', 'tab-seo', 'tab-team', 'tab-settings'];
   sections.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = (id === `tab-${tab}`) ? 'block' : 'none';
@@ -165,6 +166,7 @@ function switchTab(tab) {
                     (tab === 'services' && label.includes('services')) ||
                     (tab === 'blog' && label.includes('blog')) ||
                     (tab === 'seo' && label.includes('seo')) ||
+                    (tab === 'team' && (label.includes('team') || label.includes('about'))) ||
                     (tab === 'settings' && label.includes('settings'));
     if (isMatch) {
       btn.setAttribute('aria-current', 'page');
@@ -183,6 +185,8 @@ function switchTab(tab) {
     loadAdminBlogs();
   } else if (tab === 'seo') {
     loadAdminSEO();
+  } else if (tab === 'team') {
+    loadAdminTeam();
   } else if (tab === 'settings') {
     loadAdminSettings();
   }
@@ -1744,6 +1748,9 @@ async function loadAdminSettings() {
       setVal('setting-social-instagram', adminSettingsData.social_instagram || 'https://www.instagram.com/vyaaptam/');
       setVal('setting-social-facebook', adminSettingsData.social_facebook || 'https://www.facebook.com/vyaaptam/');
       setVal('setting-announcement-text', adminSettingsData.announcement_text || '🚀 Free 30-minute growth & compliance audit for new businesses.');
+      setVal('setting-ga4-id', adminSettingsData.ga4_id || '');
+      setVal('setting-clarity-id', adminSettingsData.clarity_id || '');
+      setVal('setting-gsc-verification', adminSettingsData.gsc_verification || '');
 
       const annToggle = document.getElementById('setting-announcement-active');
       if (annToggle) {
@@ -1779,7 +1786,10 @@ async function saveAdminSettings() {
     social_instagram: getVal('setting-social-instagram'),
     social_facebook: getVal('setting-social-facebook'),
     announcement_text: getVal('setting-announcement-text'),
-    announcement_active: annToggle ? annToggle.checked : true
+    announcement_active: annToggle ? annToggle.checked : true,
+    ga4_id: getVal('setting-ga4-id'),
+    clarity_id: getVal('setting-clarity-id'),
+    gsc_verification: getVal('setting-gsc-verification')
   };
 
   try {
@@ -1852,3 +1862,278 @@ window.uploadImageFromAdmin = uploadImageFromAdmin;
 window.toggleMediaGallery = toggleMediaGallery;
 window.selectGalleryImage = selectGalleryImage;
 window.clearCoverImage = clearCoverImage;
+
+/* ==========================================================================
+   10. TEAM & ABOUT PAGE CMS CONTROLLER
+   ========================================================================== */
+let adminTeamList = [];
+
+async function loadAdminTeam() {
+  const grid = document.getElementById('admin-team-grid');
+  if (grid) {
+    grid.innerHTML = '<div class="col-span-full py-12 text-center text-xs text-muted">Loading team members...</div>';
+  }
+
+  try {
+    const res = await fetch('/api/content?type=team');
+    if (res.ok) {
+      const data = await res.json();
+      adminTeamList = data.items || [];
+      renderAdminTeam();
+    }
+  } catch (err) {
+    console.error('Failed to load team:', err);
+    if (grid) grid.innerHTML = '<div class="col-span-full py-12 text-center text-xs text-red-500">Failed to load team members.</div>';
+  }
+
+  // Also populate about image if available in settings
+  try {
+    const sRes = await fetch('/api/content?type=settings');
+    if (sRes.ok) {
+      const sData = await sRes.json();
+      const item = sData.item || sData.settings || {};
+      const aboutInput = document.getElementById('setting-about-image');
+      if (aboutInput && item.about_image) {
+        aboutInput.value = item.about_image;
+      }
+    }
+  } catch (e) {}
+}
+
+function renderAdminTeam() {
+  const grid = document.getElementById('admin-team-grid');
+  if (!grid) return;
+
+  if (!adminTeamList.length) {
+    grid.innerHTML = '<div class="col-span-full py-12 text-center text-xs text-muted">No team members found. Click "Add New Team Member" above.</div>';
+    return;
+  }
+
+  grid.innerHTML = adminTeamList.map(m => `
+    <div class="card p-5 flex flex-col justify-between border border-line hover:shadow-md transition">
+      <div>
+        <div class="flex items-center gap-3.5 mb-3.5">
+          <div class="relative size-14 shrink-0 rounded-2xl overflow-hidden bg-sand border border-line">
+            ${m.image ? `<img src="${m.image}" alt="${m.name}" class="size-full object-cover"/>` : `<div class="size-full grid place-items-center bg-gradient-to-tr from-brand to-magenta text-white font-bold text-sm">${m.initials || 'VP'}</div>`}
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-semibold text-sm text-ink truncate">${m.name}</h3>
+            <p class="text-xs text-brand font-medium truncate">${m.role}</p>
+            ${m.linkedin ? `<a href="${m.linkedin}" target="_blank" class="text-[11px] text-muted hover:text-ink transition inline-flex items-center gap-1 mt-0.5">LinkedIn ↗</a>` : ''}
+          </div>
+        </div>
+        <p class="text-xs text-muted line-clamp-2 leading-relaxed mb-4">${m.bio || 'No bio specified.'}</p>
+      </div>
+
+      <div class="pt-3 border-t border-line flex items-center justify-between">
+        <button type="button" onclick="openTeamModal('${m.id}')" class="btn-ghost py-1.5 px-3 text-xs flex items-center gap-1 hover:bg-sand transition">
+          ✏️ Edit Member
+        </button>
+        <button type="button" onclick="deleteCurrentTeamMember('${m.id}')" class="text-xs text-red-600 hover:underline px-2 py-1">
+          Delete
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openTeamModal(id) {
+  const modal = document.getElementById('team-member-modal');
+  const title = document.getElementById('team-modal-title');
+  const delBtn = document.getElementById('team-delete-btn');
+  if (!modal) return;
+
+  const setVal = (fid, val) => {
+    const el = document.getElementById(fid);
+    if (el) el.value = val || '';
+  };
+
+  if (id) {
+    const member = adminTeamList.find(m => String(m.id) === String(id));
+    if (member) {
+      if (title) title.textContent = 'Edit Team Member';
+      setVal('team-edit-id', member.id);
+      setVal('team-edit-name', member.name);
+      setVal('team-edit-role', member.role);
+      setVal('team-edit-initials', member.initials);
+      setVal('team-edit-linkedin', member.linkedin);
+      setVal('team-edit-image', member.image);
+      setVal('team-edit-bio', member.bio);
+      if (delBtn) delBtn.style.display = 'block';
+    }
+  } else {
+    if (title) title.textContent = 'Add New Team Member';
+    setVal('team-edit-id', '');
+    setVal('team-edit-name', '');
+    setVal('team-edit-role', '');
+    setVal('team-edit-initials', '');
+    setVal('team-edit-linkedin', '');
+    setVal('team-edit-image', '');
+    setVal('team-edit-bio', '');
+    if (delBtn) delBtn.style.display = 'none';
+  }
+
+  modal.style.display = 'flex';
+}
+
+function closeTeamModal() {
+  const modal = document.getElementById('team-member-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function saveTeamMember() {
+  const id = document.getElementById('team-edit-id')?.value;
+  const name = document.getElementById('team-edit-name')?.value.trim();
+  const role = document.getElementById('team-edit-role')?.value.trim();
+  let initials = document.getElementById('team-edit-initials')?.value.trim().toUpperCase();
+  const linkedin = document.getElementById('team-edit-linkedin')?.value.trim();
+  const image = document.getElementById('team-edit-image')?.value.trim();
+  const bio = document.getElementById('team-edit-bio')?.value.trim();
+
+  if (!name || !role) {
+    alert('Please enter both name and role for the team member.');
+    return;
+  }
+
+  if (!initials) {
+    initials = name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase() || 'VP';
+  }
+
+  const saveBtn = document.getElementById('team-save-btn');
+  const originalText = saveBtn ? saveBtn.innerHTML : '';
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span>Saving...</span>';
+  }
+
+  const payload = {
+    id: id || undefined,
+    name,
+    role,
+    initials,
+    linkedin,
+    image,
+    bio
+  };
+
+  const method = id ? 'PATCH' : 'POST';
+
+  try {
+    const res = await fetch('/api/content?type=team', {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      closeTeamModal();
+      showToast(`Team member "${name}" saved!`);
+      await loadAdminTeam();
+    } else {
+      const err = await res.json();
+      alert('Error saving team member: ' + (err.error || 'Failed'));
+    }
+  } catch (err) {
+    console.error('Error saving team member:', err);
+    alert('Network error while saving team member.');
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalText;
+    }
+  }
+}
+
+async function deleteCurrentTeamMember(optionalId) {
+  const id = optionalId || document.getElementById('team-edit-id')?.value;
+  if (!id) return;
+
+  const member = adminTeamList.find(m => String(m.id) === String(id));
+  const memberName = member ? member.name : 'this member';
+
+  if (!confirm(`Are you sure you want to delete ${memberName} from the team?`)) return;
+
+  try {
+    const res = await fetch('/api/content?type=team', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ id })
+    });
+
+    if (res.ok) {
+      closeTeamModal();
+      showToast('Team member removed.');
+      await loadAdminTeam();
+    } else {
+      const err = await res.json();
+      alert('Error deleting: ' + (err.error || 'Failed'));
+    }
+  } catch (err) {
+    console.error('Delete error:', err);
+    alert('Network error while deleting team member.');
+  }
+}
+
+async function saveAboutMedia() {
+  const btn = document.getElementById('btn-save-about-media');
+  const imgInput = document.getElementById('setting-about-image');
+  const imageUrl = imgInput?.value.trim() || '/img/about.webp';
+
+  const originalHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span>Saving...</span>';
+  }
+
+  try {
+    const res = await fetch('/api/content?type=settings', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ about_image: imageUrl })
+    });
+
+    if (res.ok) {
+      if (btn) {
+        btn.style.backgroundColor = '#059669';
+        btn.innerHTML = '<span>✓ Saved!</span>';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.style.backgroundColor = '';
+          btn.innerHTML = originalHtml;
+        }, 2500);
+      }
+      showToast('About workspace image updated!');
+      alert('✅ About page image successfully updated!');
+    } else {
+      alert('Failed to save image.');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
+  } catch (err) {
+    console.error('Error saving about image:', err);
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
+    }
+  }
+}
+
+// Window global exports for Team & About CMS
+window.loadAdminTeam = loadAdminTeam;
+window.renderAdminTeam = renderAdminTeam;
+window.openTeamModal = openTeamModal;
+window.closeTeamModal = closeTeamModal;
+window.saveTeamMember = saveTeamMember;
+window.deleteCurrentTeamMember = deleteCurrentTeamMember;
+window.saveAboutMedia = saveAboutMedia;

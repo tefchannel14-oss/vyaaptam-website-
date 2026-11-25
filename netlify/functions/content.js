@@ -1,5 +1,48 @@
 // netlify/functions/content.js - Dynamic CMS & SEO API for Vyaaptam Website
+const fs = require('fs');
+const path = require('path');
 const { getSupabaseClient, getServicesStore, getBlogStore, getSeoStore, getSettingsStore } = require('./_supabase');
+
+const TEAM_FILE = path.join(__dirname, '../../site/data/team.json');
+const SETTINGS_FILE = path.join(__dirname, '../../site/data/settings.json');
+
+function getTeamStore() {
+  try {
+    if (fs.existsSync(TEAM_FILE)) {
+      return JSON.parse(fs.readFileSync(TEAM_FILE, 'utf8'));
+    }
+  } catch(e) {}
+  return [];
+}
+
+function saveTeamStore(data) {
+  try {
+    const dir = path.dirname(TEAM_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(TEAM_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch(e) {
+    console.error('Failed to save team file:', e);
+  }
+}
+
+function getDiskSettingsStore() {
+  try {
+    if (fs.existsSync(SETTINGS_FILE)) {
+      return JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8'));
+    }
+  } catch(e) {}
+  return null;
+}
+
+function saveDiskSettingsStore(data) {
+  try {
+    const dir = path.dirname(SETTINGS_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(SETTINGS_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch(e) {
+    console.error('Failed to save settings file:', e);
+  }
+}
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -90,7 +133,13 @@ exports.handler = async (event) => {
             return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ item: data }) };
           }
         }
-        return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ item: settingsStore }) };
+        const diskSettings = getDiskSettingsStore();
+        return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ item: diskSettings || settingsStore }) };
+      }
+
+      if (type === 'team') {
+        const team = getTeamStore();
+        return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ items: team }) };
       }
 
       return {
@@ -155,6 +204,23 @@ exports.handler = async (event) => {
         blogStore.unshift(newBlog);
         return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ success: true, item: newBlog }) };
       }
+
+      if (type === 'team') {
+        const team = getTeamStore();
+        const newMember = {
+          id: 'team-' + Date.now(),
+          name: data.name || 'Team Member',
+          role: data.role || 'Growth Strategist',
+          bio: data.bio || '',
+          initials: data.initials || (data.name ? data.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() : 'VM'),
+          image: data.image || '',
+          linkedin: data.linkedin || 'https://www.linkedin.com/company/vyaaptam/',
+          is_founder: Boolean(data.is_founder)
+        };
+        team.push(newMember);
+        saveTeamStore(team);
+        return { statusCode: 201, headers: CORS_HEADERS, body: JSON.stringify({ success: true, item: newMember }) };
+      }
     }
 
     // -------------------------------------------------------------
@@ -209,23 +275,47 @@ exports.handler = async (event) => {
       }
 
       if (type === 'settings') {
+        let savedItem = null;
         if (supabase) {
-          const { data: updated, error } = await supabase.from('site_settings').update(data).neq('id', '00000000-0000-0000-0000-000000000000').select().single();
-          if (error) throw error;
-          return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ success: true, item: updated }) };
+          try {
+            const { data: updated, error } = await supabase.from('site_settings').update(data).neq('id', '00000000-0000-0000-0000-000000000000').select().single();
+            if (!error && updated) savedItem = updated;
+          } catch(e) {}
         }
+        const diskSettings = getDiskSettingsStore() || settingsStore;
+        Object.assign(diskSettings, data);
+        saveDiskSettingsStore(diskSettings);
         Object.assign(settingsStore, data);
-        return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ success: true, item: settingsStore }) };
+        return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ success: true, item: savedItem || diskSettings }) };
+      }
+
+      if (type === 'team') {
+        const team = getTeamStore();
+        const idx = team.findIndex(t => t.id === data.id);
+        if (idx !== -1) {
+          team[idx] = { ...team[idx], ...data };
+          saveTeamStore(team);
+          return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ success: true, item: team[idx] }) };
+        }
+        return { statusCode: 404, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Team member not found.' }) };
       }
     }
 
     // -------------------------------------------------------------
-    // 4. DELETE: Remove Service or Blog
+    // 4. DELETE: Remove Service, Blog, or Team
     // -------------------------------------------------------------
     if (event.httpMethod === 'DELETE') {
       const { id } = query;
       if (!id) {
         return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Item ID is required.' }) };
+      }
+
+      if (type === 'team') {
+        const targetId = id || (event.body ? (typeof event.body === 'string' ? JSON.parse(event.body).id : event.body.id) : null);
+        let team = getTeamStore();
+        team = team.filter(t => String(t.id) !== String(targetId));
+        saveTeamStore(team);
+        return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ success: true, message: 'Team member removed.' }) };
       }
 
       if (type === 'services') {
