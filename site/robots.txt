@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /api/
+
+Sitemap: https://dynamic-responsive-website-7d84e2.netlify.app/sitemap.xml

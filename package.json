@@ -1,0 +1,16 @@
+{
+  "name": "vyaaptam-fullstack-website",
+  "version": "1.0.0",
+  "description": "Production Full-Stack Business Website for Vyaaptam with Node.js Serverless and Supabase",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

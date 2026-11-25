@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="preload" as="image" href="/img/vyaaptam-logo.png"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Figtree:wght@400..700&display=swap"/>
+  <link rel="stylesheet" href="/assets/index-Bwq0jTOl.css"/>
+  <title>Studio — Vyaaptam Admin CRM</title>
+  <meta name="theme-color" content="#1b1533"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="icon" type="image/png" href="/favicon.png"/>
+  <style>
+    /* Full-Stack Admin Studio Fixed 2-Column Layout */
+    #admin-content {
+      display: flex !important;
+      flex-direction: row !important;
+      min-height: 100vh !important;
+      width: 100% !important;
+      background-color: #faf7f2 !important;
+    }
+    #admin-sidebar {
+      width: 260px !important;
+      min-width: 260px !important;
+      max-width: 260px !important;
+      height: 100vh !important;
+      position: sticky !important;
+      top: 0 !important;
+      background: #ffffff !important;
+      border-right: 1px solid #e4ddd1 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+      flex-shrink: 0 !important;
+      z-index: 30 !important;
+    }
+    #admin-main {
+      flex: 1 1 0% !important;
+      min-width: 0 !important;
+      min-height: 100vh !important;
+      background: rgba(241, 235, 225, 0.45) !important;
+      overflow-x: hidden !important;
+    }
+    @media (max-width: 1023px) {
+      #admin-content {
+        flex-direction: column !important;
+      }
+      #admin-sidebar {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+        border-right: none !important;
+        border-bottom: 1px solid #e4ddd1 !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-paper font-sans text-ink antialiased">
+
+  <!-- =========================================================================
+       1. LOGIN MODAL (Visible when unauthenticated)
+       ========================================================================= -->
+  <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 backdrop-blur-sm p-4" style="display:none;">
+    <div class="card w-full max-w-md p-8 sm:p-10 bg-white shadow-2xl relative animate-rise">
+      <div class="text-center mb-8">
+        <a href="/" class="inline-block">
+          <img src="/img/vyaaptam-logo.png" alt="Vyaaptam" width="220" class="h-9 w-auto mx-auto"/>
+        </a>
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-magenta mt-3">Studio Authentication</p>
+        <h2 class="text-2xl font-semibold mt-2">Sign in to Admin</h2>
+        <p class="text-sm text-muted mt-1">Manage leads, pipeline and business enquiries.</p>
+      </div>
+
+      <div id="login-error" class="hidden mb-5 p-3 rounded-xl bg-orange-soft border border-orange/30 text-xs font-medium text-ink"></div>
+
+      <form id="admin-login-form" class="space-y-4">
+        <div>
+          <label for="login-email" class="form-label text-xs">Admin Email</label>
+          <input type="email" id="login-email" required class="form-input text-sm" placeholder="sanchit@vyaaptam.com" value="sanchit@vyaaptam.com"/>
+        </div>
+
+        <div>
+          <label for="login-password" class="form-label text-xs">Password</label>
+          <input type="password" id="login-password" required class="form-input text-sm" placeholder="Enter password" value="admin123"/>
+          <p class="text-[11px] text-muted mt-1">Default demo passcode: <span class="font-mono font-semibold">admin123</span></p>
+        </div>
+
+        <button type="submit" class="btn-brand w-full justify-center py-3 text-sm mt-2">
+          Sign In to Studio
+        </button>
+
+        <button type="button" id="demo-login-btn" class="btn-ghost w-full justify-center py-2 text-xs mt-2 border-line">
+          ⚡ Quick Demo Access (1-Click)
+        </button>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-line text-center">
+        <a href="/" class="text-xs font-semibold text-muted hover:text-ink transition inline-flex items-center gap-1">
+          ← Return to Public Website
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       2. MAIN ADMIN STUDIO WORKSPACE (Visible when authenticated)
+       ========================================================================= -->
+  <div id="admin-content" class="min-h-screen bg-sand/50">
+    <!-- SIDEBAR -->
+    <aside id="admin-sidebar" class="border-b border-line bg-white flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between px-5 py-4 lg:block lg:px-6 lg:py-6">
+          <a aria-label="Back to website" href="/">
+            <img src="/img/vyaaptam-logo.png" alt="Vyaaptam" width="347" height="102" class="h-9 w-auto"/>
+          </a>
+          <p class="hidden text-xs font-semibold uppercase tracking-[0.18em] text-muted lg:mt-2 lg:block">Studio</p>
+        </div>
+
+        <nav aria-label="Admin" class="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:px-4">
+          <button type="button" aria-current="page" class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition bg-ink text-paper">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="4" width="7" height="7" rx="1.5"></rect>
+              <rect x="13" y="4" width="7" height="7" rx="1.5"></rect>
+              <rect x="4" y="13" width="7" height="7" rx="1.5"></rect>
+              <rect x="13" y="13" width="7" height="7" rx="1.5"></rect>
+            </svg>
+            Overview
+          </button>
+          
+          <button type="button" class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition text-ink/70 hover:bg-sand">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 13h5l1.5 3h5L16 13h5M5 5h14l2 8v6H3v-6l2-8Z"></path>
+            </svg>
+            Leads
+            <span class="ml-auto rounded-full bg-magenta px-2 py-0.5 text-xs text-white">0</span>
+          </button>
+
+          <button type="button" class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition text-ink/70 hover:bg-sand">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3 9 5-9 5-9-5 9-5ZM3 13l9 5 9-5"></path>
+            </svg>
+            Services
+          </button>
+
+          <button type="button" class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition text-ink/70 hover:bg-sand">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 3H6v18h12V7l-4-4ZM14 3v4h4M9 12h6M9 16h6"></path>
+            </svg>
+            Blog posts
+          </button>
+
+          <button type="button" class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition text-ink/70 hover:bg-sand">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m20 20-3.5-3.5"></path>
+            </svg>
+            SEO Manager
+          </button>
+
+          <button type="button" class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition text-ink/70 hover:bg-sand">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            Settings
+          </button>
+        </nav>
+      </div>
+
+      <div class="p-4 border-t border-line space-y-2 hidden lg:block">
+        <a class="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink transition" href="/" target="_blank">
+          View live site <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"></path></svg>
+        </a>
+        <div>
+          <button type="button" id="logout-btn" class="w-full text-left text-xs font-semibold text-red-600 hover:text-red-700 py-1 transition flex items-center gap-1.5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Sign out
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN BODY -->
+    <main id="admin-main" class="min-w-0">
+      <!-- Status Topbar -->
+      <div class="border-b border-line bg-white px-5 py-3 text-xs sm:px-8 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span id="db-status-badge" class="rounded-full px-3 py-1 text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+            ● Full-Stack Connected
+          </span>
+          <span class="text-muted hidden sm:inline">| Netlify Serverless Functions Active</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="refreshDashboard()" class="text-xs font-semibold text-brand hover:underline flex items-center gap-1">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+            Refresh
+          </button>
+          <a href="/" class="text-xs font-semibold text-muted hover:text-ink lg:hidden">Live site ↗</a>
+        </div>
+      </div>
+
+      <div class="px-5 py-8 sm:px-8 lg:px-10">
+
+        <!-- =================================================================
+             TAB 1: OVERVIEW
+             ================================================================= -->
+        <section id="tab-overview">
+          <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h1 class="text-3xl font-semibold">Good day, Sanchit</h1>
+              <p class="mt-1 text-muted">Here’s what’s happening across vyaaptam.com.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="switchTab('leads')" class="btn-brand text-xs py-2 px-4 w-fit flex items-center gap-1.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13h5l1.5 3h5L16 13h5M5 5h14l2 8v6H3v-6l2-8Z"></path></svg>
+                Review New Enquiries
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Actions Bar -->
+          <div class="card p-4 mb-6 bg-white border border-line shadow-sm flex flex-wrap items-center justify-between gap-3">
+            <span class="text-xs font-semibold uppercase tracking-wider text-muted">Quick Actions:</span>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="openBlogModal()" class="rounded-xl px-3 py-1.5 text-xs font-semibold bg-violet-soft text-violet hover:bg-violet hover:text-white transition flex items-center gap-1.5">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>
+                Write Blog Post
+              </button>
+              <button type="button" onclick="openServiceModal()" class="rounded-xl px-3 py-1.5 text-xs font-semibold bg-magenta/10 text-magenta hover:bg-magenta hover:text-white transition flex items-center gap-1.5">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>
+                Add New Service
+              </button>
+              <button type="button" onclick="switchTab('seo')" class="rounded-xl px-3 py-1.5 text-xs font-semibold bg-orange-soft text-orange hover:bg-orange hover:text-white transition flex items-center gap-1.5">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                SEO Manager
+              </button>
+              <button type="button" onclick="switchTab('settings')" class="rounded-xl px-3 py-1.5 text-xs font-semibold bg-sand text-ink hover:bg-line transition flex items-center gap-1.5">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Agency Settings
+              </button>
+              <button type="button" onclick="exportLeadsCSV()" class="rounded-xl px-3 py-1.5 text-xs font-semibold bg-white border border-line text-ink hover:bg-sand transition flex items-center gap-1.5">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Export CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Cards (6 Executive Metrics) -->
+          <dl class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div class="card p-6">
+              <dt class="text-sm text-muted">Total Enquiries Recorded</dt>
+              <dd id="kpi-total-leads" class="mt-2 font-display text-4xl font-semibold">0</dd>
+            </div>
+            <div class="card p-6">
+              <dt class="text-sm text-muted">Awaiting First Reply</dt>
+              <dd id="kpi-awaiting-reply" class="mt-2 font-display text-4xl font-semibold text-magenta">0</dd>
+            </div>
+            <div class="card p-6">
+              <dt class="text-sm text-muted">Est. Pipeline Value</dt>
+              <dd id="kpi-pipeline-value" class="mt-2 font-display text-4xl font-semibold text-emerald-700">₹0</dd>
+            </div>
+            <div class="card p-6">
+              <dt class="text-sm text-muted">Win / Close Rate</dt>
+              <dd id="kpi-win-rate" class="mt-2 font-display text-4xl font-semibold text-violet">0%</dd>
+            </div>
+            <div class="card p-6">
+              <dt class="text-sm text-muted">Live Services Offered</dt>
+              <dd id="kpi-live-services" class="mt-2 font-display text-4xl font-semibold">15</dd>
+            </div>
+            <div class="card p-6">
+              <dt class="text-sm text-muted">Published Articles</dt>
+              <dd id="kpi-published-articles" class="mt-2 font-display text-4xl font-semibold">5</dd>
+            </div>
+          </dl>
+
+          <!-- Pipeline & Recent Enquiries -->
+          <div class="mt-6 grid gap-6 xl:grid-cols-[1fr_1.3fr]">
+            <section class="card p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold">Pipeline Stages</h2>
+                <span class="text-xs text-muted">Click stage to filter CRM</span>
+              </div>
+              <ul id="pipeline-list" class="space-y-4">
+                <!-- Dynamically populated -->
+              </ul>
+            </section>
+
+            <section class="card p-6">
+              <div class="flex items-center justify-between mb-2">
+                <h2 class="text-lg font-semibold">Latest Enquiries</h2>
+                <button type="button" onclick="switchTab('leads')" class="text-sm font-semibold text-violet hover:underline">
+                  View all leads →
+                </button>
+              </div>
+              <ul id="recent-enquiries-list" class="divide-y divide-line">
+                <!-- Dynamically populated -->
+              </ul>
+            </section>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             TAB 2: LEADS CRM
+             ================================================================= -->
+        <section id="tab-leads" style="display:none;">
+          <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 class="text-3xl font-semibold">Enquiries & CRM</h1>
+              <p class="text-sm text-muted">Track leads from initial consultation to closed deals.</p>
+            </div>
+          </div>
+          
+          <div id="all-leads-container">
+            <!-- Dynamically populated via renderLeadsView() -->
+          </div>
+        </section>
+
+        <!-- =================================================================
+             TAB 3: SERVICES CMS & PAGE EDITOR
+             ================================================================= -->
+        <section id="tab-services" style="display:none;">
+          <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 class="text-3xl font-semibold">Services Management</h1>
+              <p class="text-sm text-muted">Edit pricing, scope of work, content, and Google SEO metadata for all services.</p>
+            </div>
+            <button type="button" onclick="openServiceModal()" class="btn-brand text-xs py-2.5 px-4 w-fit flex items-center gap-1.5 shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>
+              Add New Service
+            </button>
+          </div>
+
+          <!-- Filter & Search Toolbar -->
+          <div class="card p-4 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div class="flex gap-2 overflow-x-auto w-full md:w-auto pb-1" id="services-category-tabs">
+              <button type="button" onclick="filterServices('all')" class="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-ink text-paper transition">All (<span id="count-all-srv">15</span>)</button>
+              <button type="button" onclick="filterServices('Digital Marketing')" class="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-sand hover:bg-line text-ink transition">Marketing</button>
+              <button type="button" onclick="filterServices('Web & App Development')" class="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-sand hover:bg-line text-ink transition">Web & App</button>
+              <button type="button" onclick="filterServices('Legal & Compliance')" class="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-sand hover:bg-line text-ink transition">Legal & Compliance</button>
+            </div>
+            <div class="w-full md:w-72">
+              <input type="search" id="services-search-input" oninput="handleServiceSearch(this.value)" placeholder="Search service e.g. GST, SEO, Shopify..." class="form-input text-xs py-2 w-full"/>
+            </div>
+          </div>
+
+          <div id="services-admin-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- Dynamically populated via renderAdminServices() -->
+          </div>
+        </section>
+
+        <!-- =================================================================
+             TAB 4: BLOG ARTICLES CMS
+             ================================================================= -->
+        <section id="tab-blog" style="display:none;">
+          <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 class="text-3xl font-semibold">Blog & Insights CMS</h1>
+              <p class="text-sm text-muted">Create, edit, and optimize articles for search rankings and social sharing.</p>
+            </div>
+            <button type="button" onclick="openBlogModal()" class="btn-brand text-xs py-2.5 px-4 w-fit flex items-center gap-1.5 shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>
+              Write New Article
+            </button>
+          </div>
+
+          <div id="blogs-admin-list" class="space-y-4">
+            <!-- Dynamically populated via renderAdminBlogs() -->
+          </div>
+        </section>
+
+        <!-- =================================================================
+             TAB 5: GLOBAL SEO & METADATA MANAGER
+             ================================================================= -->
+        <section id="tab-seo" style="display:none;">
+          <div class="mb-6">
+            <h1 class="text-3xl font-semibold">Global SEO & Page Meta Manager</h1>
+            <p class="text-sm text-muted">Edit title tags, meta descriptions, and Google SERP snippet previews for all core website routes.</p>
+          </div>
+
+          <div id="seo-pages-container" class="space-y-6">
+            <!-- Dynamically populated via renderAdminSEO() -->
+          </div>
+        </section>
+
+        <!-- =================================================================
+             TAB 6: AGENCY BRAND & BUSINESS SETTINGS
+             ================================================================= -->
+        <section id="tab-settings" style="display:none;">
+          <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 class="text-3xl font-semibold">Agency & Brand Settings</h1>
+              <p class="text-sm text-muted">Manage global contact information, office addresses, social links, and site announcements.</p>
+            </div>
+            <button type="button" onclick="saveAdminSettings()" class="btn-brand text-xs py-2.5 px-5 flex items-center gap-1.5 w-fit">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              Save Brand Settings
+            </button>
+          </div>
+
+          <form id="settings-admin-form" onsubmit="event.preventDefault(); saveAdminSettings();" class="space-y-6">
+            <!-- 1. Contact & Agency Identity -->
+            <div class="card p-6 sm:p-8 space-y-6">
+              <div class="flex items-center gap-2 pb-3 border-b border-line">
+                <span class="grid size-7 place-items-center rounded-lg bg-magenta/10 text-magenta font-semibold text-xs">01</span>
+                <h2 class="text-lg font-semibold text-ink">Agency Contact & Identity</h2>
+              </div>
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="form-label text-xs">Agency Brand Name</label>
+                  <input type="text" id="setting-agency-name" class="form-input text-sm" placeholder="Vyaaptam" value="Vyaaptam"/>
+                </div>
+                <div>
+                  <label class="form-label text-xs">Primary Official Email</label>
+                  <input type="email" id="setting-email" class="form-input text-sm" placeholder="hello@vyaaptam.com" value="hello@vyaaptam.com"/>
+                </div>
+                <div>
+                  <label class="form-label text-xs">Primary Phone Number (Click-to-Call)</label>
+                  <input type="text" id="setting-phone" class="form-input text-sm" placeholder="+91 63967 16516" value="+91 63967 16516"/>
+                </div>
+                <div>
+                  <label class="form-label text-xs">WhatsApp Business Number</label>
+                  <input type="text" id="setting-whatsapp" class="form-input text-sm" placeholder="+91 63967 16516" value="+91 63967 16516"/>
+                </div>
+              </div>
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="form-label text-xs">Business Working Hours</label>
+                  <input type="text" id="setting-office-hours" class="form-input text-sm" placeholder="Mon – Sat, 10am – 7pm" value="Mon – Sat, 10am – 7pm"/>
+                </div>
+                <div>
+                  <label class="form-label text-xs">Office Locations Display Text</label>
+                  <input type="text" id="setting-primary-address" class="form-input text-sm" placeholder="Offices in Ahmedabad & Amroha" value="Offices in Ahmedabad & Amroha"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Social Media Profiles -->
+            <div class="card p-6 sm:p-8 space-y-6">
+              <div class="flex items-center gap-2 pb-3 border-b border-line">
+                <span class="grid size-7 place-items-center rounded-lg bg-violet/10 text-violet font-semibold text-xs">02</span>
+                <h2 class="text-lg font-semibold text-ink">Official Social Media Profiles</h2>
+              </div>
+              <div class="grid sm:grid-cols-3 gap-4">
+                <div>
+                  <label class="form-label text-xs">LinkedIn Company URL</label>
+                  <input type="url" id="setting-social-linkedin" class="form-input text-sm" placeholder="https://www.linkedin.com/company/vyaaptam/"/>
+                </div>
+                <div>
+                  <label class="form-label text-xs">Instagram Handle / URL</label>
+                  <input type="url" id="setting-social-instagram" class="form-input text-sm" placeholder="https://www.instagram.com/vyaaptam/"/>
+                </div>
+                <div>
+                  <label class="form-label text-xs">Facebook Page URL</label>
+                  <input type="url" id="setting-social-facebook" class="form-input text-sm" placeholder="https://www.facebook.com/vyaaptam/"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Announcement Banner -->
+            <div class="card p-6 sm:p-8 space-y-6">
+              <div class="flex items-center justify-between pb-3 border-b border-line">
+                <div class="flex items-center gap-2">
+                  <span class="grid size-7 place-items-center rounded-lg bg-orange/10 text-orange font-semibold text-xs">03</span>
+                  <h2 class="text-lg font-semibold text-ink">Site-Wide Announcement Banner</h2>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="setting-announcement-active" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-line peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-line after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                  <span class="ml-2 text-xs font-semibold text-ink">Active on Website</span>
+                </label>
+              </div>
+              <div>
+                <label class="form-label text-xs">Announcement Offer / Message Text</label>
+                <input type="text" id="setting-announcement-text" class="form-input text-sm" placeholder="🚀 Free 30-minute growth & compliance audit for new businesses." value="🚀 Free 30-minute growth & compliance audit for new businesses."/>
+                <p class="text-[11px] text-muted mt-1">This promotional text is dynamically displayed across public headers.</p>
+              </div>
+            </div>
+
+            <!-- 4. System Diagnostics & Cloud Architecture -->
+            <div class="card p-6 sm:p-8 bg-paper/60 border border-line">
+              <div class="flex items-center gap-2 pb-3 border-b border-line mb-4">
+                <span class="grid size-7 place-items-center rounded-lg bg-ink/10 text-ink font-semibold text-xs">04</span>
+                <h2 class="text-lg font-semibold text-ink">System Diagnostics & Deployment Architecture</h2>
+              </div>
+              <div class="grid sm:grid-cols-3 gap-4 text-xs">
+                <div class="p-3.5 rounded-xl bg-white border border-line">
+                  <p class="text-muted font-medium">Hosting & CDN</p>
+                  <p class="font-semibold text-ink mt-0.5">Netlify Edge Global CDN</p>
+                  <span class="inline-block mt-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">✓ Active & SSL Secured</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-white border border-line">
+                  <p class="text-muted font-medium">Serverless Backend</p>
+                  <p class="font-semibold text-ink mt-0.5">Netlify Functions (Node.js)</p>
+                  <span class="inline-block mt-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">✓ Latency &lt; 45ms</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-white border border-line">
+                  <p class="text-muted font-medium">Database Layer</p>
+                  <p class="font-semibold text-ink mt-0.5">Supabase PostgreSQL 15</p>
+                  <span class="inline-block mt-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">✓ RLS Security Active</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-2">
+              <button type="submit" class="btn-brand py-3 px-8 text-sm flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Save All Agency Settings
+              </button>
+            </div>
+          </form>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       3. MODAL: DETAILED LEAD VIEW & CRM NOTES
+       ========================================================================= -->
+  <div id="lead-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 backdrop-blur-sm p-4 overflow-y-auto" style="display:none;">
+    <div class="card w-full max-w-2xl p-6 sm:p-8 bg-white shadow-2xl relative my-8 animate-rise">
+      <div id="lead-detail-content">
+        <!-- Dynamically rendered by openLeadModal() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. MODAL: EDIT / CREATE SERVICE
+       ========================================================================= -->
+  <div id="service-edit-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 backdrop-blur-sm p-4 overflow-y-auto" style="display:none;">
+    <div class="card w-full max-w-3xl p-6 sm:p-8 bg-white shadow-2xl relative my-8 animate-rise">
+      <div class="flex items-center justify-between pb-4 border-b border-line mb-6">
+        <div>
+          <h2 id="service-modal-title" class="text-2xl font-semibold">Edit Service</h2>
+          <p class="text-xs text-muted mt-0.5">Customize service scope, pricing, key deliverables, and search engine metadata.</p>
+        </div>
+        <button type="button" onclick="closeServiceModal()" class="size-8 rounded-full grid place-items-center bg-sand hover:bg-line transition text-ink font-semibold">✕</button>
+      </div>
+
+      <form id="service-edit-form" class="space-y-4">
+        <input type="hidden" id="service-edit-id"/>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="form-label text-xs">Service Title *</label>
+            <input type="text" id="service-edit-name" required class="form-input text-sm" placeholder="e.g. Search Engine Optimisation" oninput="updateServiceModalSerp()"/>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="form-label text-xs">URL Slug *</label>
+              <button type="button" onclick="autoGenerateServiceSlug()" class="text-[11px] text-brand hover:underline font-medium">Auto-generate</button>
+            </div>
+            <input type="text" id="service-edit-slug" required class="form-input text-sm" placeholder="e.g. seo" oninput="updateServiceModalSerp()"/>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="form-label text-xs">Category *</label>
+            <select id="service-edit-category" class="form-input text-sm">
+              <option value="Digital Marketing">Digital Marketing</option>
+              <option value="Web & App Development">Web & App Development</option>
+              <option value="Legal & Compliance">Legal & Compliance</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label text-xs">Price / Starting Rate</label>
+            <input type="text" id="service-edit-price" class="form-input text-sm" placeholder="e.g. From ₹7,499 / month or Custom quote"/>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label text-xs">Tagline / Short Value Pitch</label>
+          <input type="text" id="service-edit-tagline" class="form-input text-sm" placeholder="e.g. Rank for the searches your customers type every day."/>
+        </div>
+
+        <div>
+          <label class="form-label text-xs">Full Scope & Overview Description</label>
+          <textarea id="service-edit-description" rows="3" class="form-input text-sm" placeholder="Describe the service in detail..."></textarea>
+        </div>
+
+        <div>
+          <label class="form-label text-xs">Key Deliverables (One per line for bullet points)</label>
+          <textarea id="service-edit-deliverables" rows="3" class="form-input text-xs font-mono" placeholder="✓ Technical Site Audit & Fixes&#10;✓ High-Intent Keyword Targeting&#10;✓ Google Business Profile Local 3-Pack Growth"></textarea>
+        </div>
+
+        <!-- SEO SETTINGS & SERP PREVIEW -->
+        <div class="p-5 rounded-2xl bg-sand/40 border border-line space-y-4">
+          <p class="text-xs font-semibold text-magenta uppercase tracking-wider flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+            Search Engine Optimization (Google SERP)
+          </p>
+
+          <!-- Live Google SERP Snippet Preview -->
+          <div class="p-4 rounded-xl bg-white border border-line/80 shadow-sm space-y-1">
+            <p class="text-xs text-[#202124] font-mono truncate">
+              https://vyaaptam.com/services/<span id="service-serp-slug" class="text-muted font-bold">seo</span>
+            </p>
+            <h4 id="service-serp-title" class="text-base font-medium text-[#1a0dab] truncate">
+              Best SEO Services in Ahmedabad | Vyaaptam
+            </h4>
+            <p id="service-serp-desc" class="text-xs text-[#4d5156] line-clamp-2 leading-relaxed">
+              Grow organic traffic and Google Map rankings with Ahmedabad leading SEO agency.
+            </p>
+          </div>
+
+          <div class="grid gap-3">
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="form-label text-xs">Meta Title Tag</label>
+                <span id="service-char-title" class="text-[11px] text-muted font-mono">0 / 60 chars</span>
+              </div>
+              <input type="text" id="service-edit-meta-title" class="form-input text-sm" placeholder="Best SEO Agency in Ahmedabad | Vyaaptam" oninput="updateServiceModalSerp()"/>
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="form-label text-xs">Meta Description Tag</label>
+                <span id="service-char-desc" class="text-[11px] text-muted font-mono">0 / 160 chars</span>
+              </div>
+              <textarea id="service-edit-meta-desc" rows="2" class="form-input text-xs" placeholder="Google snippet description..." oninput="updateServiceModalSerp()"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-line flex items-center justify-between">
+          <button type="button" id="service-delete-btn" onclick="deleteCurrentService()" class="text-xs font-semibold text-red-600 hover:underline">
+            Delete Service
+          </button>
+          <div class="flex items-center gap-3">
+            <button type="button" onclick="closeServiceModal()" class="btn-ghost py-2 px-4 text-xs">Cancel</button>
+            <button type="submit" class="btn-brand py-2 px-5 text-xs">Save Service Changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       5. MODAL: WORLD-CLASS VISUAL BLOG CMS EDITOR
+       ========================================================================= -->
+  <div id="blog-edit-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 backdrop-blur-sm p-4 overflow-y-auto" style="display:none;">
+    <div class="card w-full max-w-4xl p-6 sm:p-8 bg-white shadow-2xl relative my-8 animate-rise">
+      <div class="flex items-center justify-between pb-4 border-b border-line mb-4">
+        <div>
+          <h2 id="blog-modal-title" class="text-2xl font-semibold">Edit Article</h2>
+          <p class="text-xs text-muted mt-0.5">Author articles with live formatting, media previews, and Google SERP testing.</p>
+        </div>
+        <button type="button" onclick="closeBlogModal()" class="size-8 rounded-full grid place-items-center bg-sand hover:bg-line transition text-ink font-semibold">✕</button>
+      </div>
+
+      <!-- Dual Mode Selector: Write & Compose vs Visual Live Preview -->
+      <div class="flex items-center justify-between border-b border-line pb-3 mb-5">
+        <div class="flex items-center gap-2">
+          <button type="button" id="blog-mode-write-btn" onclick="switchBlogModalMode('write')" class="rounded-xl px-4 py-2 text-xs font-semibold bg-ink text-paper transition flex items-center gap-1.5 shadow-sm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            Write & Compose
+          </button>
+          <button type="button" id="blog-mode-preview-btn" onclick="switchBlogModalMode('preview')" class="rounded-xl px-4 py-2 text-xs font-semibold bg-sand text-ink hover:bg-line transition flex items-center gap-1.5">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            Visual Live Preview
+          </button>
+        </div>
+        <span id="blog-word-count-badge" class="text-xs font-mono font-medium text-muted bg-sand px-3 py-1 rounded-full">
+          0 words · ~1 min read
+        </span>
+      </div>
+
+      <!-- WRITE MODE CONTAINER -->
+      <div id="blog-write-container">
+        <form id="blog-edit-form" class="space-y-4">
+          <input type="hidden" id="blog-edit-id"/>
+          
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label text-xs">Article Headline *</label>
+              <input type="text" id="blog-edit-title" required class="form-input text-sm" placeholder="e.g. 10 Proven Marketing Strategies for 2026" oninput="updateBlogStats(); updateBlogModalSerp();"/>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="form-label text-xs">URL Slug *</label>
+                <button type="button" onclick="autoGenerateBlogSlug()" class="text-[11px] text-brand hover:underline font-medium">Auto-generate</button>
+              </div>
+              <input type="text" id="blog-edit-slug" required class="form-input text-sm" placeholder="e.g. 10-proven-marketing-strategies" oninput="updateBlogModalSerp()"/>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-4 gap-3">
+            <div>
+              <label class="form-label text-xs">Category *</label>
+              <select id="blog-edit-category" class="form-input text-sm">
+                <option value="Marketing">Marketing</option>
+                <option value="SEO">SEO</option>
+                <option value="Web & App">Web & App</option>
+                <option value="Legal">Legal</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label text-xs">Author Name</label>
+              <input type="text" id="blog-edit-author" class="form-input text-sm" placeholder="Sanchit Khandelwal"/>
+            </div>
+            <div>
+              <label class="form-label text-xs">Reading Time</label>
+              <input type="text" id="blog-edit-read-time" class="form-input text-sm" placeholder="e.g. 6 min read"/>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="form-label text-xs mb-0">Cover Image URL</label>
+                <div class="flex items-center gap-2">
+                  <label class="cursor-pointer text-[11px] font-semibold text-brand hover:underline flex items-center gap-1 bg-violet-soft/70 hover:bg-violet-soft px-2 py-0.5 rounded transition">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    📁 Upload Image
+                    <input type="file" id="blog-image-upload-input" accept="image/*" class="sr-only" onchange="uploadImageFromAdmin(event, 'blog-edit-cover-image')"/>
+                  </label>
+                  <button type="button" onclick="toggleMediaGallery('blog-edit-cover-image')" class="text-[11px] font-semibold text-ink/75 hover:text-ink flex items-center gap-1 bg-sand px-2 py-0.5 rounded hover:bg-line transition">
+                    🖼️ Pick from Gallery
+                  </button>
+                </div>
+              </div>
+              <input type="text" id="blog-edit-cover-image" class="form-input text-sm" placeholder="/img/blog-agency.webp" oninput="updateBlogCoverThumbnail()"/>
+            </div>
+          </div>
+
+          <!-- Media Gallery Picker Grid (collapsible) -->
+          <div id="media-gallery-blog-edit-cover-image" class="hidden p-4 rounded-xl bg-sand/40 border border-line space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-ink flex items-center gap-1.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Click any brand image to select:
+              </span>
+              <button type="button" onclick="toggleMediaGallery('blog-edit-cover-image')" class="text-[11px] font-bold text-muted hover:text-ink">✕ Close</button>
+            </div>
+            <div id="media-gallery-grid-blog-edit-cover-image" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 pt-1">
+              <!-- Dynamically populated by vyaaptam-admin.js -->
+            </div>
+          </div>
+
+          <!-- Cover Image Thumbnail Preview (if specified) -->
+          <div id="blog-cover-thumbnail-box" class="hidden p-3 rounded-xl bg-sand/40 border border-line flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <img id="blog-cover-thumbnail-img" src="" alt="Cover thumbnail" class="w-20 h-12 object-cover rounded-lg border border-line bg-white"/>
+              <div>
+                <p class="text-xs font-semibold text-ink flex items-center gap-1.5">
+                  <span class="inline-block size-2 rounded-full bg-emerald-500"></span> Cover Image Active
+                </p>
+                <p id="blog-cover-thumbnail-url" class="text-[11px] text-muted font-mono truncate max-w-xs sm:max-w-md"></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('blog-edit-cover-image').value); alert('Copied image URL to clipboard!');" class="text-xs text-brand font-medium hover:underline">Copy URL</button>
+              <span class="text-muted/40">·</span>
+              <button type="button" onclick="clearCoverImage('blog-edit-cover-image')" class="text-xs text-red-500 hover:underline">Remove</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label text-xs">Excerpt / Lead Paragraph (Preview for Cards & Socials) *</label>
+            <textarea id="blog-edit-excerpt" rows="2" class="form-input text-sm" placeholder="Short, captivating summary for blog cards and Google snippets..."></textarea>
+          </div>
+
+          <!-- RICH FORMATTING TOOLBAR -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="form-label text-xs mb-0">Full Article Content (Markdown & HTML supported)</label>
+              <span class="text-[11px] text-muted">Use toolbar to format instantly</span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-1 p-2 rounded-t-xl bg-sand/60 border border-line border-b-0">
+              <button type="button" onclick="formatBlogText('bold')" title="Bold" class="px-2.5 py-1 text-xs font-bold rounded hover:bg-white transition border border-transparent hover:border-line">B</button>
+              <button type="button" onclick="formatBlogText('italic')" title="Italic" class="px-2.5 py-1 text-xs italic rounded hover:bg-white transition border border-transparent hover:border-line">I</button>
+              <span class="text-muted/40 px-1">|</span>
+              <button type="button" onclick="formatBlogText('h2')" title="Heading 2" class="px-2.5 py-1 text-xs font-semibold rounded hover:bg-white transition border border-transparent hover:border-line">H2</button>
+              <button type="button" onclick="formatBlogText('h3')" title="Heading 3" class="px-2.5 py-1 text-xs font-semibold rounded hover:bg-white transition border border-transparent hover:border-line">H3</button>
+              <span class="text-muted/40 px-1">|</span>
+              <button type="button" onclick="formatBlogText('quote')" title="Blockquote" class="px-2.5 py-1 text-xs rounded hover:bg-white transition border border-transparent hover:border-line">Quote</button>
+              <button type="button" onclick="formatBlogText('bullet')" title="Bullet List" class="px-2.5 py-1 text-xs rounded hover:bg-white transition border border-transparent hover:border-line">• Bullets</button>
+              <button type="button" onclick="formatBlogText('number')" title="Numbered List" class="px-2.5 py-1 text-xs rounded hover:bg-white transition border border-transparent hover:border-line">1. Numbered</button>
+              <span class="text-muted/40 px-1">|</span>
+              <button type="button" onclick="formatBlogText('link')" title="Insert Link" class="px-2.5 py-1 text-xs rounded hover:bg-white transition border border-transparent hover:border-line">🔗 Link</button>
+              <button type="button" onclick="formatBlogText('image')" title="Insert Image" class="px-2.5 py-1 text-xs rounded hover:bg-white transition border border-transparent hover:border-line">🖼️ Image</button>
+              <button type="button" onclick="formatBlogText('tip')" title="Callout Tip Box" class="px-2.5 py-1 text-xs rounded hover:bg-white transition border border-transparent hover:border-line">💡 Tip Box</button>
+              <button type="button" onclick="formatBlogText('divider')" title="Divider Line" class="px-2.5 py-1 text-xs rounded hover:bg-white transition border border-transparent hover:border-line">― Divider</button>
+            </div>
+            
+            <textarea id="blog-edit-content" rows="10" class="form-input text-sm font-mono rounded-t-none border-t-0" placeholder="Write your full article here. Use the formatting toolbar above to add headings, bold text, bullet points, quotes and images..." oninput="updateBlogStats(); updateBlogPreview();"></textarea>
+          </div>
+
+          <!-- SEO SETTINGS & LIVE SERP PREVIEW -->
+          <div class="p-5 rounded-2xl bg-sand/40 border border-line space-y-4">
+            <p class="text-xs font-semibold text-magenta uppercase tracking-wider flex items-center gap-1.5">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+              Google Search Result Snippet Simulation
+            </p>
+
+            <!-- SERP Preview Card -->
+            <div class="p-4 rounded-xl bg-white border border-line/80 shadow-sm space-y-1">
+              <p class="text-xs text-[#202124] font-mono truncate">
+                https://vyaaptam.com/blog/<span id="blog-serp-slug" class="text-muted font-bold">article-slug</span>
+              </p>
+              <h4 id="blog-serp-title" class="text-base font-medium text-[#1a0dab] truncate">
+                Article Title Headline
+              </h4>
+              <p id="blog-serp-desc" class="text-xs text-[#4d5156] line-clamp-2 leading-relaxed">
+                Article excerpt or meta description will appear here on Google searches.
+              </p>
+            </div>
+
+            <div class="grid gap-3">
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label class="form-label text-xs">SEO Meta Title</label>
+                  <span id="blog-char-title" class="text-[11px] text-muted font-mono">0 / 60 chars</span>
+                </div>
+                <input type="text" id="blog-edit-meta-title" class="form-input text-sm" placeholder="Title for Google rankings" oninput="updateBlogModalSerp()"/>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label class="form-label text-xs">SEO Meta Description</label>
+                  <span id="blog-char-desc" class="text-[11px] text-muted font-mono">0 / 160 chars</span>
+                </div>
+                <textarea id="blog-edit-meta-desc" rows="2" class="form-input text-xs" placeholder="Google snippet description..." oninput="updateBlogModalSerp()"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-line flex items-center justify-between">
+            <button type="button" id="blog-delete-btn" onclick="deleteCurrentBlog()" class="text-xs font-semibold text-red-600 hover:underline">
+              Delete Article
+            </button>
+            <div class="flex items-center gap-3">
+              <button type="button" onclick="closeBlogModal()" class="btn-ghost py-2 px-4 text-xs">Cancel</button>
+              <button type="submit" class="btn-brand py-2 px-5 text-xs">Save & Publish Article</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- VISUAL LIVE PREVIEW CONTAINER -->
+      <div id="blog-preview-container" class="hidden">
+        <div class="p-6 sm:p-10 rounded-2xl bg-paper border border-line space-y-6 max-h-[70vh] overflow-y-auto">
+          <!-- Live Preview Header -->
+          <div class="border-b border-line pb-6">
+            <div class="flex items-center gap-2 mb-3">
+              <span id="prev-category" class="rounded-full px-3 py-1 text-xs font-semibold bg-magenta/10 text-magenta">Marketing</span>
+              <span id="prev-read-time" class="text-xs text-muted">· 5 min read</span>
+              <span class="text-xs text-muted">· Today</span>
+            </div>
+            <h1 id="prev-title" class="font-display text-3xl sm:text-4xl font-semibold text-ink leading-tight">Article Headline</h1>
+            <div class="mt-4 flex items-center gap-3">
+              <div class="size-10 rounded-full bg-sand grid place-items-center font-display font-semibold text-ink text-sm" id="prev-author-avatar">VK</div>
+              <div>
+                <p id="prev-author-name" class="text-sm font-semibold text-ink">Author Name</p>
+                <p class="text-xs text-muted">Growth Strategist at Vyaaptam</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Image -->
+          <div id="prev-hero-box" class="hidden rounded-2xl overflow-hidden border border-line">
+            <img id="prev-hero-img" src="" alt="Article Banner" class="w-full max-h-72 object-cover"/>
+          </div>
+
+          <!-- Excerpt Callout -->
+          <div id="prev-excerpt" class="text-base text-ink/80 italic font-medium border-l-4 border-magenta pl-4 py-1">
+            Article excerpt preview...
+          </div>
+
+          <!-- Formatted Article Body -->
+          <div id="prev-body-html" class="prose max-w-none text-ink text-sm leading-relaxed space-y-4">
+            <!-- Rendered by updateBlogPreview() -->
+          </div>
+        </div>
+
+        <div class="pt-5 border-t border-line flex items-center justify-between mt-4">
+          <button type="button" onclick="switchBlogModalMode('write')" class="btn-ghost py-2 px-4 text-xs flex items-center gap-1.5">
+            ← Back to Editor
+          </button>
+          <button type="button" onclick="document.getElementById('blog-edit-form').requestSubmit()" class="btn-brand py-2 px-6 text-xs">
+            Save & Publish Now
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FLOATING TOAST NOTIFICATION -->
+  <div id="admin-toast" class="fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl bg-ink text-paper shadow-2xl text-xs font-semibold flex items-center gap-2 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="admin-toast-text">Changes saved successfully!</span>
+  </div>
+
+  <!-- Client Script for Admin Studio -->
+  <script src="/assets/vyaaptam-admin.js"></script>
+</body>
+</html>
